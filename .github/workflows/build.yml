@@ -16,3 +16,28 @@ jobs:
         env:
           TERM: dumb
           JAVA_OPTS: -Xmx2048m
+      - uses: actions/upload-artifact@v3
+        with:
+          name: debug-unsigned
+          path: play-services-core/build/outputs/apk/*/debug/*.apk
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release-unsigned
+          path: play-services-core/build/outputs/apk/*/release/*.apk
+      - uses: Tlaster/android-sign@v1.2.2
+        with:
+          releaseDirectory: |
+            play-services-core/build/outputs/apk/hmsDefault/release
+            play-services-core/build/outputs/apk/hmsHuawei/release
+            play-services-core/build/outputs/apk/mapboxDefault/release
+            play-services-core/build/outputs/apk/mapboxHuawei/release
+            play-services-core/build/outputs/apk/vtmDefault/release
+            play-services-core/build/outputs/apk/vtmHuawei/release
+          signingKeyBase64: ${{ secrets.KEYSTORE }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWD }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          output: build/release/signed
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release-signed
+          path: build/release/signed
